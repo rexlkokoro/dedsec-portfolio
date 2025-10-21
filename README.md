@@ -1,6 +1,9 @@
 # DedSec Portfolio (React + Vite + Tailwind CSS)
 
 > A hacker-themed portfolio with neon green on black, glitch/scanline effects, terminal-style animations, and subtle sound design. Built with React, Vite, Tailwind CSS v4, and Framer Motion.
+> <img width="1418" height="720" alt="boot screen" src="https://github.com/user-attachments/assets/9fcf1f00-ace9-4fbb-ad8e-84493773f989" />
+
+<img width="1421" height="721" alt="webpage" src="https://github.com/user-attachments/assets/a597ec24-f6d3-43f3-a1bf-9ec05821d66c" />
 
 ## Overview
 
