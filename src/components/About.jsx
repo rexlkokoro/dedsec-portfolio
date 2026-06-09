@@ -1,23 +1,10 @@
 import { motion } from 'framer-motion'
 import { hoverBeep } from '../utils/sfx'
+import { usePortfolio } from '../context/PortfolioContext'
 
 export default function About() {
-  const heading = 'B.Tech CSE Student | Web Developer | Cyber & AI Enthusiast'
-
-  const summary1 = `I’m Manas Kumar Singh, a Computer Science and Engineering student driven by curiosity and creativity. I love experimenting with technology, building intuitive web experiences, exploring AI reasoning systems, or tinkering with experimental projects just because it’s possible.`
-  const summary2 = `My work spans web development, data systems, and AI experimentation, with a special interest in LLM-based automation and intelligent agents that can plan, adapt, and interact meaningfully.`
-  const summary3 = `Outside academics, I take on freelance projects on Discord and Twitter, helping communities and individuals with art, tech projects, and writing. I blend technical depth with personality, building things that not only work, but feel alive.`
-
-  const stacks = [
-    { title: 'Frontend Development', items: ['HTML', 'CSS', 'JavaScript'] },
-    { title: 'Backend Development', items: ['Python', 'Node.js (JavaScript)'] },
-    { title: 'Databases', items: ['SQL', 'SQLite', 'DBMS'] },
-    { title: 'AI / Data Systems', items: ['NLP', 'RAG', 'Information Retrieval', 'Data Processing', 'MCP (Memory, Context & Planning)', 'Open Source Debugging', 'Python'] },
-    { title: 'Business & Analytics', items: ['Power BI', 'Microsoft Excel', 'BI Analysis'] },
-    { title: 'Networking & Systems', items: ['Network Deployment', 'Server Management', 'Computer Hardware Repair'] },
-    { title: 'Design & Tools', items: ['AutoCAD', 'Regex', 'Git / GitHub'] },
-    { title: 'Deployment & Hosting', items: ['Netlify', 'Vercel', 'GitHub Pages', 'Static Site Hosting'] },
-  ]
+  const { data } = usePortfolio()
+  const { heading, summaries, stacks } = data.about
 
   return (
     <section id="about" className="py-20 md:py-28" onMouseOver={hoverBeep}>
@@ -45,9 +32,9 @@ export default function About() {
           onMouseEnter={hoverBeep}
         >
           <div className="text-[var(--accent)] font-semibold">Professional Summary</div>
-          <p className="text-[var(--text)]/90 leading-relaxed">{summary1}</p>
-          <p className="text-[var(--text)]/90 leading-relaxed">{summary2}</p>
-          <p className="text-[var(--text)]/90 leading-relaxed">{summary3}</p>
+          {summaries.map((s, i) => (
+            <p key={i} className="text-[var(--text)]/90 leading-relaxed">{s}</p>
+          ))}
         </motion.div>
 
         <motion.h3
@@ -63,7 +50,7 @@ export default function About() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {stacks.map((s) => (
             <motion.div
-              key={s.title}
+              key={s.id}
               initial={{ opacity: 0, y: 14 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}

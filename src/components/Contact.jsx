@@ -1,13 +1,11 @@
 import { motion } from 'framer-motion'
 import { beep, hoverBeep } from '../utils/sfx'
-
-const links = [
-  { label: 'GitHub', href: 'https://github.com/rexlkokoro' },
-  { label: 'LinkedIn', href: 'https://linkedin.com/in/manas-kumar-singh-03b0b4367/' },
-  { label: 'Email', href: 'mailto:manaskumarsingh2005@gmail.com' },
-]
+import { usePortfolio } from '../context/PortfolioContext'
 
 export default function Contact() {
+  const { data } = usePortfolio()
+  const links = data.contact.links
+
   return (
     <section id="contact" className="py-20 md:py-28" onMouseOver={hoverBeep}>
       <div className="container mx-auto px-6">
@@ -23,19 +21,19 @@ export default function Contact() {
         </motion.h2>
 
         <div className="card-neon rounded-md p-6 md:p-8">
-          <ul className="space-y-3 text-sm md:text-base">
+          <ul className="flex flex-wrap gap-3 md:flex-col md:gap-0 md:space-y-3 text-sm md:text-base">
             {links.map((l) => (
-              <li key={l.href}>
+              <li key={l.id}>
                 <a
                   href={l.href}
                   target={l.href.startsWith('http') ? '_blank' : undefined}
                   rel="noreferrer"
                   onMouseEnter={beep}
-                  className="inline-flex items-center gap-3 border-b border-[var(--accent)]/30 pb-2 hover:border-[var(--accent)] transition-colors"
+                  className="inline-flex items-center gap-3 border border-[var(--accent)]/30 md:border-0 md:border-b rounded md:rounded-none px-4 py-2 md:px-0 md:py-0 md:pb-2 hover:border-[var(--accent)] transition-colors"
                 >
                   <span className="text-[var(--accent)]">$</span>
                   <span className="glitch" data-text={l.label}>{l.label}</span>
-                  <span className="text-[var(--subtext)]">{l.href.replace('mailto:', '')}</span>
+                  <span className="hidden md:inline text-[var(--subtext)]">{l.href.replace('mailto:', '')}</span>
                 </a>
               </li>
             ))}

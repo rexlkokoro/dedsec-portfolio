@@ -1,13 +1,19 @@
 import { motion } from 'framer-motion'
 import RotatingType from './RotatingType'
 import { hoverBeep, unlockAudio } from '../utils/sfx'
+import { usePortfolio } from '../context/PortfolioContext'
 
 export default function Hero() {
+  const { data } = usePortfolio()
+  const { identityName, realName, subtitle, roles, imageSrc, imageAlt } = data.hero
+
   const scrollToAbout = () => {
     try { unlockAudio() } catch {}
     const el = document.getElementById('about')
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
+
+  const identityLabel = `Identity: ${identityName}`
 
   return (
     <section className="relative overflow-hidden py-20 md:py-28" onMouseOver={hoverBeep}>
@@ -20,8 +26,8 @@ export default function Hero() {
           className="flex justify-center"
         >
           <img
-            src="/assets/reaper.png"
-            alt="Reaper logo"
+            src={imageSrc}
+            alt={imageAlt}
             className="max-w-xs md:max-w-sm glow flicker"
             onMouseEnter={hoverBeep}
           />
@@ -34,30 +40,14 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="text-left"
         >
-          <h1 className="text-3xl md:text-5xl font-pixel heading-scan mb-4 glitch" data-text="Identity: Rexl Kokoro" onMouseEnter={hoverBeep}>
-            Identity: Rexl Kokoro
+          <h1 className="text-3xl md:text-5xl font-pixel heading-scan mb-4 glitch" data-text={identityLabel} onMouseEnter={hoverBeep}>
+            {identityLabel}
           </h1>
           <div className="text-lg md:text-2xl text-[var(--text)] mb-3">
             <RotatingType
               prefix="Hey, I am "
-              initial="Manas Kumar Singh"
-              roles={[
-                'a Programmer.',
-                'a Coder.',
-                'a Builder.',
-                'a Creator.',
-                'a Designer.',
-                'an Innovator.',
-                'a Visionary.',
-                'an Artist.',
-                'a Poet.',
-                'a Storyteller.',
-                'a Thinker.',
-                'a Philosopher.',
-                'a Dreamer.',
-                'an Explorer.',
-                'a Listener.'
-              ]}
+              initial={realName}
+              roles={roles}
               typeSpeed={90}
               deleteSpeed={55}
               startPause={1000}
@@ -66,7 +56,7 @@ export default function Hero() {
             />
           </div>
           <p className="text-[var(--subtext)] text-sm md:text-base mb-8">
-            B.Tech CSE | Web Developer | Cyber & AI Enthusiast
+            {subtitle}
           </p>
 
           <button onClick={scrollToAbout} onMouseEnter={hoverBeep} className="btn-neon">

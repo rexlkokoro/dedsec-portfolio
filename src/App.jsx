@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import BootScreen from './components/BootScreen'
 import { beep } from './utils/sfx'
 import { unlockAudio } from './utils/sfx'
@@ -6,8 +7,10 @@ import Hero from './components/Hero'
 import About from './components/About'
 import Projects from './components/Projects'
 import Contact from './components/Contact'
+import AdminPage from './pages/AdminPage'
+import { PortfolioProvider } from './context/PortfolioContext'
 
-function App() {
+function Portfolio() {
   const [booted, setBooted] = useState(false)
 
   useEffect(() => {
@@ -15,7 +18,6 @@ function App() {
     if (saved === '1') setBooted(true)
   }, [])
 
-  // Ensure audio is unlocked on the first real user gesture so hover beeps can play
   useEffect(() => {
     const unlock = () => unlockAudio()
     window.addEventListener('pointerdown', unlock, { once: true })
@@ -52,6 +54,19 @@ function App() {
         </footer>
       </main>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <PortfolioProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Portfolio />} />
+          <Route path="/admin" element={<AdminPage />} />
+        </Routes>
+      </BrowserRouter>
+    </PortfolioProvider>
   )
 }
 
