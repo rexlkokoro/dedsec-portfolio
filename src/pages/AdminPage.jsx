@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePortfolio } from '../context/PortfolioContext'
 
@@ -263,7 +263,7 @@ const TABS = ['Hero', 'About', 'Projects', 'Contact']
 
 export default function AdminPage() {
   const navigate = useNavigate()
-  const { data, saveData, resetData } = usePortfolio()
+  const { data, saveData, resetData, defaultData, loading } = usePortfolio()
 
   const [authed, setAuthed] = useState(false)
   const [pwInput, setPwInput] = useState('')
@@ -272,6 +272,16 @@ export default function AdminPage() {
   const [draft, setDraft] = useState(() => JSON.parse(JSON.stringify(data)))
   const [activeTab, setActiveTab] = useState('Hero')
   const [saved, setSaved] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState(false)
+  const syncedRemote = useRef(false)
+
+  useEffect(() => {
+    if (!loading && !syncedRemote.current) {
+      syncedRemote.current = true
+      setDraft(JSON.parse(JSON.stringify(data)))
+    }
+  }, [loading, data])
 
   const handleLogin = () => {
     if (pwInput === ADMIN_PASSWORD) {
@@ -282,17 +292,35 @@ export default function AdminPage() {
     }
   }
 
-  const handleSave = useCallback(() => {
-    saveData(draft)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2500)
+  const handleSave = useCallback(async () => {
+    setSaving(true)
+    setSaveError(false)
+    try {
+      await saveData(draft)
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2500)
+    } catch {
+      setSaveError(true)
+      setTimeout(() => setSaveError(false), 3000)
+    } finally {
+      setSaving(false)
+    }
   }, [draft, saveData])
 
-  const handleReset = () => {
+  const handleReset = async () => {
     if (!window.confirm('Reset all portfolio content to defaults? This cannot be undone.')) return
-    resetData()
-    setDraft(JSON.parse(JSON.stringify(data)))
-    setSaved(false)
+    setSaving(true)
+    setSaveError(false)
+    try {
+      await resetData()
+      setDraft(JSON.parse(JSON.stringify(defaultData)))
+      setSaved(false)
+    } catch {
+      setSaveError(true)
+      setTimeout(() => setSaveError(false), 3000)
+    } finally {
+      setSaving(false)
+    }
   }
 
   if (!authed) {
@@ -350,7 +378,9 @@ export default function AdminPage() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          {saved && <span className="text-[#B3E10D] text-xs animate-pulse">✓ SAVED</span>}
+          {saving && <span className="text-[#B3E10D]/60 text-xs animate-pulse">⟳ SYNCING...</span>}
+          {saved && !saving && <span className="text-[#B3E10D] text-xs animate-pulse">✓ SAVED</span>}
+          {saveError && <span className="text-red-400 text-xs">✕ SYNC FAILED</span>}
           <button
             onClick={handleReset}
             className="text-xs border border-red-500/40 text-red-400 px-4 py-2 rounded hover:bg-red-500/10 transition-colors"
@@ -359,9 +389,10 @@ export default function AdminPage() {
           </button>
           <button
             onClick={handleSave}
-            className="text-xs border border-[#B3E10D] text-[#B3E10D] px-5 py-2 rounded hover:bg-[#B3E10D]/10 transition-colors"
+            disabled={saving}
+            className="text-xs border border-[#B3E10D] text-[#B3E10D] px-5 py-2 rounded hover:bg-[#B3E10D]/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Save Changes
+            {saving ? 'Saving...' : 'Save Changes'}
           </button>
           <button
             onClick={() => navigate('/')}
@@ -395,9 +426,10 @@ export default function AdminPage() {
           </button>
           <button
             onClick={handleSave}
-            className="border border-[#B3E10D] text-[#B3E10D] px-8 py-2.5 rounded text-sm uppercase tracking-widest hover:bg-[#B3E10D]/10 transition-colors"
+            disabled={saving}
+            className="border border-[#B3E10D] text-[#B3E10D] px-8 py-2.5 rounded text-sm uppercase tracking-widest hover:bg-[#B3E10D]/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Save Changes
+            {saving ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
       </div>
